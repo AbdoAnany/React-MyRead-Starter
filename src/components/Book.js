@@ -10,22 +10,18 @@ function Book(props) {
     imageCover = noCover;
   }
   function ShelfChanger(e) {
-    console.log(props.isSearch);
-    props.ShelfChanger(props.book, e.target.value);
+    props.ShelfChanger(props.book,  e.target.value,props.isSearch);
   }
 
     let shelfValue = "none";
     
     if(props.books.find((book)=>book.id === props.book.id)) {
-      shelfValue = props.books.find((book)=>book.id === 
-      props.book.id).shelf;
+      shelfValue = props.books.find((book)=>book.id ===  props.book.id).shelf;
     }
     let noneOption;
 
   if (props.isSearch) {
-    noneOption = (
-      <div></div>
-    );
+    noneOption = null;
   } else {
     noneOption = (
       <option value="none">None</option>

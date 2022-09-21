@@ -22,12 +22,54 @@ function App() {
     booksFn();
   }, []);
 
-  function ShelfChanger(book, shelf) {
+  function ShelfChanger(book, shelf,isSearch) {
     API.update(book, shelf);
     book.shelf = shelf;
     let newBooks = allBooks.filter((myBook) => myBook.id !== book.id);
     setAllBooks(() => newBooks.concat(book));
+    if(isSearch){
+      setSearchResult(  searchResult.filter((item) => 
+      item.id !== book.id));
+    }
   }
+
+
+  const [searchResult, setSearchResult] = useState([]);
+  const [inputValue, setInputValue] = useState("");
+
+  useEffect(() => {
+    const search = async () => {
+      var result = await API.search(inputValue, 20);
+      const allBook = await API.getAll();
+      var resFilter =result
+      
+      if (Array.isArray(result)) {
+
+        for (let i = 0; i < allBook.length; i++) {
+          
+          resFilter= resFilter.filter((item) => 
+          item.id !== allBook[i].id);
+          
+        }       
+        setSearchResult(resFilter);
+      } else {
+       
+        setSearchResult([]);
+      }
+    };
+    search();
+
+  }, [inputValue]);
+
+  function searchInputHandler(e) {
+    if (e.target.value === "") {
+    
+      setSearchResult([]);
+    }
+
+    setInputValue(e.target.value);
+  }
+
 
   return (
     <div className="app">
@@ -38,7 +80,12 @@ function App() {
           } />
         <Route
           path="search"exact
-          element={<Search ShelfChanger={ShelfChanger} books={allBooks}/>}/>
+          element={<Search 
+            searchInputHandler={searchInputHandler}
+            searchResult ={searchResult}
+            isSearch={true}
+          ShelfChanger={ShelfChanger}
+           books={allBooks}/>}/>
       </Routes>
     </div>
   );
