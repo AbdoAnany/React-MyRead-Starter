@@ -49,7 +49,7 @@ function Search(props) {
       <div className="search-books-results">
         <ol className="books-grid">{ searchResult.map((myBook) => (
       <li key={myBook.id}>
-        <Book book={myBook} ShelfChanger={props.ShelfChanger} books={props.books}></Book>
+        <Book book={myBook} isSearch={true}  ShelfChanger={props.ShelfChanger} books={props.books}></Book>
       </li>
     ))}</ol>
       </div>

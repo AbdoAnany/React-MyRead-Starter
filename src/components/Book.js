@@ -1,14 +1,36 @@
 import React from "react";
+import noCover from "../icons/download.png";
 
 function Book(props) {
+ 
+  let imageCover;
+  if (props.book.imageLinks) {
+    imageCover = props.book.imageLinks.thumbnail;
+  } else {
+    imageCover = noCover;
+  }
   function ShelfChanger(e) {
+    console.log(props.isSearch);
     props.ShelfChanger(props.book, e.target.value);
   }
+
     let shelfValue = "none";
     
     if(props.books.find((book)=>book.id === props.book.id)) {
-      shelfValue = props.books.find((book)=>book.id === props.book.id).shelf;
+      shelfValue = props.books.find((book)=>book.id === 
+      props.book.id).shelf;
     }
+    let noneOption;
+
+  if (props.isSearch) {
+    noneOption = (
+      <div></div>
+    );
+  } else {
+    noneOption = (
+      <option value="none">None</option>
+    );
+  }
     return (
     <div className="book">
       <div className="book-top">
@@ -17,7 +39,8 @@ function Book(props) {
           style={{
             width: 128,
             height: 193,
-            backgroundImage: `url("${props.book.imageLinks.thumbnail}")`,
+            backgroundImage: 
+            `url("${imageCover}")`,
           }}
         ></div>
         <div className="book-shelf-changer">
@@ -29,7 +52,9 @@ function Book(props) {
       <option value="currentlyReading">Currently Reading</option>
       <option value="wantToRead">Want to Read</option>
       <option value="read">Read</option>
-      <option value="none">None</option>
+      {noneOption}
+      
+   
     </select>
         </div>
       </div>
