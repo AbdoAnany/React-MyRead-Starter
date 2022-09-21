@@ -9,14 +9,26 @@ function HomeScreen(props) {
         <h1>MyReads</h1>
       </div>
       <div className="list-books-content">
-      {props.allShelf.map(shelf => (
       <BookShelf
         books={props.allBooks}
-        shelf={shelf.key}
-        shelfTitle={shelf.name}
-        ShelfChanger={props.ShelfChanger}/>
-     ))}
+        shelf="currentlyReading"
+        shelfTitle="Currently Reading" isSearch={false}
+        ShelfChanger={props.ShelfChanger}
+      />
+      <BookShelf
+        books={props.allBooks} isSearch={false}
+        shelf="wantToRead"
+        shelfTitle="Want to Read"
+        ShelfChanger={props.ShelfChanger}
+      />
+      <BookShelf
+        books={props.allBooks}
+        shelf="read"
+        shelfTitle="Read" isSearch={false}
+        ShelfChanger={props.ShelfChanger}
+      />
     </div>
+    
       <div className="open-search">
         <Link to="/search">Add a book</Link>
       </div>
