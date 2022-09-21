@@ -1,66 +1,47 @@
-import React from 'react'
-import './App.css'
-import { Route,BrowserRouter } from 'react-router-dom'
-import * as BooksAPI from "./BooksAPI"
-import ListBooks from "./ListBooks"
-import SearchBooks from "./SearchBooks"
+import "./App.css";
+import { useState, useEffect } from "react";
+import Search from "./components/Search";
+import * as API from "./BooksAPI";
+import { Route, Routes } from "react-router-dom";
+import HomeScreen from "./HomeScreen";
 
-class HomeApp extends React.Component {
-  state = {
-    books : [],
-    shelves : [
+function App() {
+  const [allBooks, setAllBooks] = useState([]);
+  const [allShelf] = useState([
    
-      {key:'currentlyReading' , name: 'Currently Reading'},
-      {key:'wantToRead' , name: 'Want to Read'},
-      {key:'read' , name: 'Read'},
-    ]
+    {key:'currentlyReading' , name: 'Currently Reading'},
+    {key:'wantToRead' , name: 'Want to Read'},
+    {key:'read' , name: 'Read'},
+  ]);
+
+  useEffect(() => {
+    const booksFn = async () => {
+      const booksResult = await API.getAll();
+      setAllBooks(booksResult);
+    };
+    booksFn();
+  }, []);
+
+  function ShelfChanger(book, shelf) {
+    API.update(book, shelf);
+    book.shelf = shelf;
+    let newBooks = allBooks.filter((myBook) => myBook.id !== book.id);
+    setAllBooks(() => newBooks.concat(book));
   }
 
-  componentDidMount() {
-    BooksAPI.getAll().then((books) =>   this.setState({ books }) );
-  }
-
-  changeState = (book, shelf) => {
-    BooksAPI.update(book, shelf).then(books => {
-     
-      if(book.shelf === 'none' && shelf !== 'none')
-        this.setState(state => {  return {books:  state.books.concat(book)}})
-      
-      const updatedBookState = this.state.books.map(c => {
-        if (c.id === book.id) { c.shelf = shelf }
-        return c;
-      });
-
-      this.setState({  books: updatedBookState,});
-              if(shelf === 'none')
-          this.setState(state=>{
-            return {books: state.books.filter(deleteBook => deleteBook.id !== book.id)}
-          })
-        
-    });
-  }
-
-  render() {
-
-    return (
-      <div className="app">
-        <BrowserRouter>      
-      
-        <Route path='/search'
-        render={() => (
-          <SearchBooks books={this.state.books}    onChangeShelf={this.changeState} />
-        )} />
-
-        <Route exact path='/'
-        render={() => (
-          <ListBooks books={this.state.books} shelves={this.state.shelves}  onChangeShelf={this.changeState} />
-        )} />
-            </BrowserRouter>
-
-      </div>
-    )
-  }
+  return (
+    <div className="app">
+      <Routes>
+      <Route path="/" exact
+          element={
+            <HomeScreen allBooks={allBooks} allShelf={allShelf} ShelfChanger={ShelfChanger}></HomeScreen>
+          } />
+        <Route
+          path="search"exact
+          element={<Search ShelfChanger={ShelfChanger} books={allBooks}/>}/>
+      </Routes>
+    </div>
+  );
 }
 
-
-export default HomeApp
+export default App;
